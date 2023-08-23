@@ -1,0 +1,1 @@
+declare module "freestyler_node_connector";

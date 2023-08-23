@@ -13,13 +13,21 @@
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
+    "browser-socket": "^1.0.1",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.19",
+    "freestyler_node_connector": "^1.0.1",
+    "fs": "^0.0.1-security",
+    "lucide-react": "^0.268.0",
+    "net": "^1.0.2",
     "next": "13.4.19",
     "postcss": "8.4.28",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "socket.io-client": "^4.7.2",
     "tailwindcss": "3.3.3",
+    "tcp-client": "^1.1.9",
+    "tcp-ping-port": "^1.0.1",
     "typescript": "5.1.6"
   }
 }
