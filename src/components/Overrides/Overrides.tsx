@@ -38,7 +38,7 @@ const Overrides = ({ overrides, updateState }: OverridesProps) => {
 
     
     return (
-        <div className="grid grid-cols-2 gap-2 w-[100%] h-[500px] overflow-y-auto">
+        <div className="grid grid-cols-2 gap-2 w-[500px] max-sm:w-[100%] h-[500px] overflow-y-auto">
             {overrides.length === 0 && <h2 className="text-white font-bold">Loading...</h2>}
             {overrides.map((pb: { label: string, status: boolean, code: string, timeScene: number }, i: number) => (
                 <button key={i} onClick={() => handleSendPlayback(pb.code, 'FSBC007')} className={`text-zinc-200 h-20 rounded-md ${pb.status ? 'bg-orange-600' : 'bg-blue-600'}  w-full flex justify-center items-center gap-2`}>

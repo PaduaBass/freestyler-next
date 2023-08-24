@@ -24,6 +24,14 @@ let isConvertLabels = true;
 let socket: any;
 let count = 0;
 
+
+
+if(socket) {
+  socket.on('data', (data: any) => {
+    console.log(data);
+  })
+}
+
 const convertDataHome = (data: string) => {
   home.blackout = data.split(',')[1] === '1' ?? false;
   home.favorite = data.split(',')[3] === '1' ?? false;

@@ -1,7 +1,7 @@
 "use client";
 
 import { SocketContext } from "@/context/socketContext";
-import {  Workflow } from "lucide-react";
+import {  Workflow, LucideWifiOff, Wifi } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useContext, useState, useEffect } from "react";
 import QrCode from "react-qr-code";
@@ -112,7 +112,7 @@ const Connect = () => {
         {!loading ? (
           <>
             Conectar
-            <Workflow className="w-4" />
+            <Wifi className="w-4" />
           </>
         ) : (
           <div role="status">
@@ -137,6 +137,14 @@ const Connect = () => {
         )}
       </button>
       </>
+
+      <button
+        onClick={handleDisconnect}
+        className="h-9 max-sm:h-16 p-2 gap-2 bg-blue-600 mt-2 rounded-md text-white flex items-center justify-center font-bold"
+      >
+        Desconectar
+        <LucideWifiOff className="w-4" />
+      </button>
 
     </div>
   );

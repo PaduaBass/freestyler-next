@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import { LightbulbOff, LightbulbIcon, Lock, Flag, MegaphoneIcon, HomeIcon, PlayCircle, MousePointerSquareDashed } from 'lucide-react';
+import { LightbulbOff, LightbulbIcon, Lock, Flag, MegaphoneIcon, HomeIcon, PlayCircle, MousePointerSquareDashed, LucideWifiOff } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { SocketContext } from '@/context/socketContext';
 import Connect from '@/components/Connect/Connect';
@@ -64,7 +64,7 @@ export default function Home() {
       method: 'DELETE',
     }).then(response => response.json().then(data => {
       console.log(data);
-      handleConnect(data);
+      handleConnect(data.status);
     }))
   }
 
@@ -81,14 +81,37 @@ export default function Home() {
             <span>0%</span>
             <span>100%</span>
           </div>
-          <input id="default-range" defaultValue='100' type="range" className="w-full h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+          <input id="default-range" max={255} min={0} onChange={e => handleSendCommand(`FSOC155${e.target.value}`)} defaultValue={255} type="range" className="w-full h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
         </div>
         {page === 0 && (
-         <Dashboard homeState={homeState} updateState={data => setHomeState(data)} />
+          <>
+          <Dashboard homeState={homeState} updateState={data => setHomeState(data)} />
+          <label className='text-white font-bold'>Fog level</label>
+          <div className='flex justify-between text-white'>
+            <span>0%</span>
+            <span>100%</span>
+          </div>
+          <input id="default-range" max={255} min={0} onChange={e => handleSendCommand(`FSOC304${e.target.value}`)} defaultValue={50} type="range" className="w-full h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+          <button
+          onClick={handleDisconnect}
+          className="h-9 max-sm:h-16 p-2 mt-20 gap-2 bg-blue-600 mt-2 rounded-md text-white flex items-center justify-center font-bold"
+        >
+          Desconectar
+          <LucideWifiOff className="w-4" />
+        </button>
+          </>
         )}
 
         {page === 1 && (
+          <>
           <Playbacks playbacks={playbacks} updateState={data => setPlaybacks(data)} />
+          <label className='text-white font-bold'>Scene Time</label>
+          <div className='flex justify-between text-white'>
+            <span>0%</span>
+            <span>100%</span>
+          </div>
+          <input id="default-range" max={255} min={0} onChange={e => handleSendCommand(`FSOC206${e.target.value}`)} defaultValue={50} type="range" className="w-full h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+          </>
         )}
         
         {page === 2 && (
