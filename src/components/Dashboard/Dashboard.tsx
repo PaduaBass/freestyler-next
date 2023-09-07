@@ -1,4 +1,6 @@
 import api from "@/services/api";
+import { getClient, Body } from '@tauri-apps/api/http';
+
 import { Flag, LightbulbIcon, LightbulbOff, Lock, MegaphoneIcon } from "lucide-react"
 
 type HomeProps = {
@@ -12,12 +14,24 @@ type HomeProps = {
 }
 const Dashboard = ({ homeState, updateState }: HomeProps) => {
     const handleSendCommand = async (command: string, subCommand?: string) => {
-        const response = await api.put('/', {
+        const client = await getClient();
+        const body = Body.json({
           command, 
           subCommand, 
-          home: true
+          home: true,
         });
-        updateState(response.data.home);
+        const response = await client.put('http://localhost:4444', body) as any;
+        if(response.data) {
+          updateState(response.data.home);
+        } else {
+          const response = await api.put('/', {
+            command, 
+            subCommand, 
+            home: true
+          });
+          updateState(response.data.home);
+        }
+        
       }
 
 
