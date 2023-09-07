@@ -1,4 +1,5 @@
 'use client'
+import api from "@/services/api";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect } from "react";
 
@@ -9,24 +10,22 @@ type PlaybacksProps = {
 
 const Playbacks = ({ playbacks, updateState }: PlaybacksProps) => {
 
-    const handleSendCommand = (command: string, subCommand?: string) => {
-        fetch('/api', {
-          method: 'PUT',
-          body: JSON.stringify({ command, subCommand, playbacks: true }),
-        }).then(response => response.json().then(data => {
-          console.log(data);
-          updateState(data.playbacks);
-        }));
+    const handleSendCommand = async (command: string, subCommand?: string) => {
+        const response = await api.put('/', {
+            command, 
+            subCommand, 
+            playbacks: true
+        });
+        updateState(response.data.playbacks);
       }
 
-    const handleSendPlayback = (command: string, subCommand?: string) => {
-        fetch('/api', {
-            method: 'PUT',
-            body: JSON.stringify({ command, subCommand, statusPB: true }),
-          }).then(response => response.json().then(data => {
-            console.log(data);
-            updateState(data.playbacks);
-          }));
+    const handleSendPlayback = async (command: string, subCommand?: string) => {
+        const response = await api.put('/', {
+            command, 
+            subCommand, 
+            statusPB: true,
+        });
+        updateState(response.data.playbacks);
     } 
     useEffect(() => {
         if(playbacks.length === 0) {

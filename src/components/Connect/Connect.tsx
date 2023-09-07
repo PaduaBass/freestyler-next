@@ -1,6 +1,7 @@
 "use client";
 
 import { SocketContext } from "@/context/socketContext";
+import api from "@/services/api";
 import {  Workflow, LucideWifiOff, Wifi } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useContext, useState, useEffect } from "react";
@@ -14,7 +15,7 @@ const Connect = () => {
   const [ipServer, setIpServer] = useState('');
 
   const getInterfaces = async () => {
-    fetch('/api').then(response => response.json().then(data => {
+    fetch('http://localhost:4444/').then(response => response.json().then(data => {
       if(data.interfaces) {
         let address = data.interfaces['Wi-Fi'].find((obj: any) => obj.family === "IPv4").address;
         setIpServer('http://'+address + ':3000');
@@ -49,35 +50,25 @@ const Connect = () => {
   const handleConnectRequest = async () => {
     if (ip.length > 8 && port.length > 3) {
       setLoading(true);
-      fetch("api/", {
-        method: "POST",
-        body: JSON.stringify({ ip: ip, port: port }),
-      }).then((response) =>
-        response.json().then((data) => {
-          console.log(data);
-          setLoading(false);
-          handleConnect(data.status);
-        })
-      );
+      const response = await api.post('/', {
+        ip,
+        port
+      });
+      setLoading(false);
+      handleConnect(response.data.status);
     }
   };
 
   const handleSendCommand = () => {
-    fetch("/api", {
+    fetch("http://localhost:4444/", {
       method: "PUT",
       body: JSON.stringify({ command: "FSOC002255" }),
     }).then((response) => response.json().then((data) => console.log(data)));
   };
 
-  const handleDisconnect = () => {
-    fetch("/api", {
-      method: "DELETE",
-    }).then((response) =>
-      response.json().then((data) => {
-        console.log(data);
-        handleConnect(data.status);
-      })
-    );
+  const handleDisconnect = async () => {
+    const response = await api.delete('/');
+    handleConnect(response.data.status);
   };
 
   function maskIP(ip: string) {}

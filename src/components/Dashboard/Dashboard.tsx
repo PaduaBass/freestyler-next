@@ -1,3 +1,4 @@
+import api from "@/services/api";
 import { Flag, LightbulbIcon, LightbulbOff, Lock, MegaphoneIcon } from "lucide-react"
 
 type HomeProps = {
@@ -10,14 +11,13 @@ type HomeProps = {
     updateState: (data: any) => void;
 }
 const Dashboard = ({ homeState, updateState }: HomeProps) => {
-    const handleSendCommand = (command: string, subCommand?: string) => {
-        fetch('/api', {
-          method: 'PUT',
-          body: JSON.stringify({ command, subCommand, home: true }),
-        }).then(response => response.json().then(data => {
-          console.log(data);
-          updateState(data.home);
-        }))
+    const handleSendCommand = async (command: string, subCommand?: string) => {
+        const response = await api.put('/', {
+          command, 
+          subCommand, 
+          home: true
+        });
+        updateState(response.data.home);
       }
 
 

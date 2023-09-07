@@ -1,4 +1,5 @@
 'use client'
+import api from "@/services/api";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect } from "react";
 
@@ -8,24 +9,23 @@ type OverridesProps = {
 }
 
 const Overrides = ({ overrides, updateState }: OverridesProps) => {
-    const handleSendCommand = (command: string, subCommand?: string) => {
-        fetch('/api', {
-          method: 'PUT',
-          body: JSON.stringify({ command, subCommand, overrides: true }),
-        }).then(response => response.json().then(data => {
-          console.log(data);
-          updateState(data.overrides);
-        }));
+    const handleSendCommand = async (command: string, subCommand?: string) => {
+        const response = await api.put('/', {
+            command, 
+            subCommand, 
+            overrides: true
+        });
+        updateState(response.data.overrides);
       }
 
-    const handleSendPlayback = (command: string, subCommand?: string) => {
-        fetch('/api', {
-            method: 'PUT',
-            body: JSON.stringify({ command, subCommand, statusOR: true }),
-          }).then(response => response.json().then(data => {
-            console.log(data);
-            updateState(data.overrides);
-          }));
+    const handleSendPlayback = async (command: string, subCommand?: string) => {
+        const response = await api.put('/', {
+            command, 
+            subCommand, 
+            statusOR: true        
+        });
+        updateState(response.data.overrides);
+
     } 
     useEffect(() => {
         if(overrides.length === 0) {

@@ -11,6 +11,7 @@ import { Socket } from 'net';
 import Dashboard from '@/components/Dashboard/Dashboard';
 import Playbacks from '@/components/Playbacks/Playbacks';
 import Overrides from '@/components/Overrides/Overrides';
+import api from '@/services/api';
 // import { test } from '@/services/socket';
 export default function Home() {
 
@@ -38,7 +39,7 @@ export default function Home() {
   const handleConnectRequest = async () => {
     if(ipRef.current && ipRef.current.value.length > 8 && portRef.current && portRef.current.value.length > 3) {
       setLoading(true);
-      fetch('api/', {
+      fetch('http://localhost:4444/', {
         method: 'POST',
         body: JSON.stringify({ ip: ipRef.current.value, port: portRef.current.value }),
        }).then(response => response.json().then(data => {
@@ -50,22 +51,17 @@ export default function Home() {
    
   }
 
-  const handleSendCommand = (command: string, subCommand?: string) => {
-    fetch('/api', {
-      method: 'PUT',
-      body: JSON.stringify({ command, subCommand }),
-    }).then(response => response.json().then(data => {
-      console.log(data);
-      setHomeState(data.home);
-    }))
+  const handleSendCommand = async (command: string, subCommand?: string) => {
+    const response = await api.put('/', {
+      command, 
+      subCommand, 
+    });
+    setHomeState(response.data.home);
+
   }
-  const handleDisconnect = () => {
-    fetch('/api', {
-      method: 'DELETE',
-    }).then(response => response.json().then(data => {
-      console.log(data);
-      handleConnect(data.status);
-    }))
+  const handleDisconnect = async () => {
+    const response = await api.delete('/');
+    handleConnect(response.data.status);
   }
 
   
