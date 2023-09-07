@@ -29,5 +29,5 @@ export default function RootLayout({
         <body className={inter.className}>{children}</body>
       </SocketContextProvider>
     </html>
-  )
+  );
 }

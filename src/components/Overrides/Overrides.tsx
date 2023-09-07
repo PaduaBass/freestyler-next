@@ -1,5 +1,6 @@
 'use client'
 import api from "@/services/api";
+import { Body, getClient } from "@tauri-apps/api/http";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect } from "react";
 
@@ -10,21 +11,47 @@ type OverridesProps = {
 
 const Overrides = ({ overrides, updateState }: OverridesProps) => {
     const handleSendCommand = async (command: string, subCommand?: string) => {
-        const response = await api.put('/', {
+        const client = await getClient();
+        const body = Body.json({
             command, 
             subCommand, 
             overrides: true
         });
-        updateState(response.data.overrides);
+        const response = await client.put('http://localhost:4444', body) as any;
+        if(response.data) {
+            updateState(response.data.overrides);
+            await client.drop();
+        } else {
+            const response = await api.put('/', {
+                command, 
+                subCommand, 
+                overrides: true
+            });
+            updateState(response.data.overrides);
+        }
+       
       }
 
+
     const handleSendPlayback = async (command: string, subCommand?: string) => {
-        const response = await api.put('/', {
+        const client = await getClient();
+        const body = Body.json({
             command, 
             subCommand, 
-            statusOR: true        
+            statusOR: true   
         });
-        updateState(response.data.overrides);
+        const response = await client.put('http://localhost:4444', body) as any;
+        if(response.data) {
+            updateState(response.data.overrides);
+            await client.drop();
+        } else {
+            const response = await api.put('/', {
+                command, 
+                subCommand, 
+                statusOR: true        
+            });
+            updateState(response.data.overrides);
+        }
 
     } 
     useEffect(() => {

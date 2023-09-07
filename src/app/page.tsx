@@ -7,11 +7,13 @@ import Connect from '@/components/Connect/Connect';
 import QRCode from "react-qr-code";
 import dynamic from 'next/dynamic'
 
+
 import { Socket } from 'net';
 import Dashboard from '@/components/Dashboard/Dashboard';
 import Playbacks from '@/components/Playbacks/Playbacks';
 import Overrides from '@/components/Overrides/Overrides';
 import api from '@/services/api';
+import { Body, getClient } from '@tauri-apps/api/http';
 // import { test } from '@/services/socket';
 export default function Home() {
 
@@ -47,21 +49,41 @@ export default function Home() {
           setLoading(false)
           handleConnect(data);
        }))
-    }
-   
+    }   
   }
 
   const handleSendCommand = async (command: string, subCommand?: string) => {
-    const response = await api.put('/', {
+    const client = await getClient();
+    const body = Body.json({
       command, 
       subCommand, 
     });
-    setHomeState(response.data.home);
+    const response = await client.put('http://localhost:4444', body) as any;
+
+    if(response.data) {
+      setHomeState(response.data.home);
+      await client.drop()
+    } else {
+      const response = await api.put('/', {
+        command, 
+        subCommand, 
+      });
+      setHomeState(response.data.home);
+    }
+
 
   }
   const handleDisconnect = async () => {
-    const response = await api.delete('/');
-    handleConnect(response.data.status);
+    const client = await getClient();
+    const response = await client.delete('http://localhost:4444') as any;
+    if(response.data) {
+      handleConnect(response.data.status);
+      await client.drop();
+    } else {
+      const response = await api.delete('/');
+      handleConnect(response.data.status);
+    }
+  
   }
 
   

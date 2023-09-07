@@ -1,5 +1,6 @@
 'use client'
 import api from "@/services/api";
+import { Body, getClient } from "@tauri-apps/api/http";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect } from "react";
 
@@ -11,21 +12,46 @@ type PlaybacksProps = {
 const Playbacks = ({ playbacks, updateState }: PlaybacksProps) => {
 
     const handleSendCommand = async (command: string, subCommand?: string) => {
-        const response = await api.put('/', {
+        const client = await getClient();
+        const body = Body.json({
             command, 
             subCommand, 
-            playbacks: true
+            playbacks: true  
         });
-        updateState(response.data.playbacks);
+        const response = await client.put('http://localhost:4444', body) as any;
+        if(response.data) {
+            updateState(response.data.playbacks);
+            await client.drop();
+        } else {
+            const response = await api.put('/', {
+                command, 
+                subCommand, 
+                playbacks: true
+            });
+            updateState(response.data.playbacks);
+        }
       }
 
     const handleSendPlayback = async (command: string, subCommand?: string) => {
-        const response = await api.put('/', {
+        const client = await getClient();
+        const body = Body.json({
             command, 
             subCommand, 
             statusPB: true,
         });
-        updateState(response.data.playbacks);
+        const response = await client.put('http://localhost:4444', body) as any;
+        if(response.data) {
+            updateState(response.data.playbacks);
+            await client.drop();
+        }   else {
+            const response = await api.put('/', {
+                command, 
+                subCommand, 
+                statusPB: true,
+            });
+            updateState(response.data.playbacks);
+        }
+      
     } 
     useEffect(() => {
         if(playbacks.length === 0) {

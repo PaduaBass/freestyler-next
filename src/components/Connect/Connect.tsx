@@ -6,6 +6,8 @@ import {  Workflow, LucideWifiOff, Wifi } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useContext, useState, useEffect } from "react";
 import QrCode from "react-qr-code";
+import { getClient } from '@tauri-apps/api/http';
+import { cli } from "@tauri-apps/api";
 const Connect = () => {
   const [ip, setIp] = useState("127.0.0.1");
   const [port, setPort] = useState("3332");
@@ -13,15 +15,34 @@ const Connect = () => {
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [ipServer, setIpServer] = useState('');
+  const [erro, setErro] = useState<any>('');
 
   const getInterfaces = async () => {
-    fetch('http://localhost:4444/').then(response => response.json().then(data => {
-      if(data.interfaces) {
-        let address = data.interfaces['Wi-Fi'].find((obj: any) => obj.family === "IPv4").address;
-        setIpServer('http://'+address + ':3000');
-        setIp(address)
-      }
-    }));
+   try {
+    const client = await getClient();
+    const response = await client.get('http://localhost:4444/') as any;
+
+  
+    if(response.data) {
+      let address = response.data?.interfaces['Wi-Fi'].find((obj: any) => obj.family === "IPv4").address;
+
+      setIpServer('http://'+address + ':3000');
+      setIp(address);
+      await client.drop();
+    } else {
+      fetch('http://localhost:4444/').then(response => response.json().then(data => {
+        if(data.interfaces) {
+          let address = data.interfaces['Wi-Fi'].find((obj: any) => obj.family === "IPv4").address;
+          setIpServer('http://'+address + ':3000');
+          setIp(address)
+        }
+      }));
+    }
+   
+   } catch(e) {
+    console.log(e);
+    setErro(e);
+   }
   } 
 
   useEffect(() => {
@@ -83,6 +104,7 @@ const Connect = () => {
     )}
       <>
       <h2 className="text-white text-center mb-2">FreeStyler DMX Connect</h2>
+      <span>{String(erro)}</span>
       <input
         value={ip}
         onChange={(e) => setIp(e.target.value)}
@@ -136,7 +158,6 @@ const Connect = () => {
         Desconectar
         <LucideWifiOff className="w-4" />
       </button>
-
     </div>
   );
 };
